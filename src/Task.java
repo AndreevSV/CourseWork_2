@@ -1,21 +1,21 @@
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-public abstract class Task {
+public class Task {
     private static int counter = 1;
     private final int id;
     private final String title; // заголовок
     private final String text; // текст задачи
     private final TypeOfTask typeOfTask; // тип задачи - личная, рабочая
-    private final Calendar calendar; // дата и время
+    private final LocalDateTime time; // дата и время
     private final Repetition repetition; // повторяесть задачи
 
-    public Task(String title, String text, TypeOfTask typeOfTask, Calendar calendar, Repetition repetition) {
-        this.id = counter++;
+    public Task(String title, String text, TypeOfTask typeOfTask, LocalDateTime time, Repetition repetition) {
+        id = counter++;
         this.title = title;
         this.text = text;
         this.typeOfTask = typeOfTask;
-        this.calendar = calendar;
+        this.time = time;
         this.repetition = repetition;
     }
 
@@ -31,29 +31,45 @@ public abstract class Task {
         return text;
     }
 
-//    public TypeOfTask getTypeOfTask() {
-//        return typeOfTask;
-//    }
-//
-//    public Calendar getCalendar() {
-//        return calendar;
-//    }
-//
-//    public Repetition getRepetition() {
-//        return repetition;
-//    }
+    public TypeOfTask getTypeOfTask() {
+        return typeOfTask;
+    }
 
-    public abstract boolean isTaskOrNot(Calendar calendar);
+    public LocalDateTime getLocalDateTime() {
+        return time;
+    }
+
+    public Repetition getRepetition() {
+        return repetition;
+    }
+
+    private String getTimeNextTask() {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm");
+        switch (repetition) {
+            case ONECE:
+                return " ";
+            case EVERY_DAY:
+                return " Следующая дата и время: " + time.plusDays(1).format(date);
+            case EVERY_WEEK:
+                return " Следующая дата и время: " + time.plusWeeks(1).format(date);
+            case EVERY_MONTH:
+                return " Следующая дата и время: " + time.plusMonths(1).format(date);
+            case EVERY_YEAR:
+                return " Следующая дата и время: " + time.plusYears(1).format(date);
+            default:
+                break;
+        }
+        return null;
+    }
 
     @Override
     public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm");
-
-        return "ЗАДАЧА № " + getId() + " {" +
-                "название: " + getTitle() +
-                ", описание: " + getText() +
+        return "ЗАДАЧА № " + id + " {" +
+                "название: " + title +
+                ", описание: " + text +
                 ", тип задачи: " + typeOfTask.getTypeOfTask() +
-                ", дата и время установки задачи: " + dateFormat.format(calendar.getTime()) +
+                ", дата и время установки задачи: " + time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm")) +
+                getTimeNextTask() +
                 ", повторяемость: " + repetition.getRepetition() +
                 '}';
     }
