@@ -6,7 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class Diary {
-    private final Map<Integer, Task> setOfTasks = new HashMap<>();
+    private final Map<Integer, Task> mapOfTasks = new HashMap<>();
 
     public void addTask() {
         Scanner scanner = new Scanner(System.in);
@@ -68,15 +68,15 @@ public class Diary {
         System.out.println();
         System.out.println("Задача " + task.getId() + " создана");
         System.out.println(task);
-        setOfTasks.put(task.getId(), task);
+        mapOfTasks.put(task.getId(), task);
         System.out.println();
     }
 
     public void deleteTask() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Имеющиеся задачи: ");
-        for (Integer task : setOfTasks.keySet()) {
-            System.out.println("Порядковый номер " + task + " : " + setOfTasks.get(task));
+        for (Integer task : mapOfTasks.keySet()) {
+            System.out.println("Порядковый номер " + task + " : " + mapOfTasks.get(task));
         }
         System.out.print("Какую задачу хотите удалить? Введите номер задачи: ");
         Integer id = null;
@@ -87,19 +87,18 @@ public class Diary {
                 System.out.println(e.getMessage() + "вы ввели не цифру ");
             }
             if (id != null) {
-                if (setOfTasks.containsKey(id)) {
-                    setOfTasks.remove(id);
+                if (mapOfTasks.containsKey(id)) {
+                    mapOfTasks.remove(id);
                     break;
                 } else
                     System.out.print("Задачи с таким номером не существует! Повторите ввод: ");
             }
         }
-
     }
 
     public void getATask() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("На какой день вы хотите получить список задач? Введите дату в формате dd.MM.yyyy");
+        System.out.print("На какой день вы хотите получить список задач? Введите дату в формате dd.MM.yyyy : ");
         LocalDate localDate = null;
         while (true) {
             try {
@@ -111,10 +110,33 @@ public class Diary {
                 break;
             }
         }
-        for (Integer key : setOfTasks.keySet()) {
-            if (Period.between(localDate, setOfTasks.get(key).getLocalDateTime().toLocalDate()).getDays() == 0) {
-                System.out.println(key + " " + setOfTasks.get(key));
+//        while (localDate == null);
+        System.out.println("На " + localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " установлены следующие задачи: ");
+        for (Task task : mapOfTasks.values()) {
+            switch (task.getRepetition()) {
+                case ONECE -> {
+                    if (Period.between(localDate, task.getLocalDateTime().toLocalDate()).getDays() == 0) {
+                        System.out.println(task);
+                    }
+                }
+                case EVERY_DAY -> System.out.println(task);
+                case EVERY_WEEK -> {
+                    if (task.getLocalDateTime().getDayOfWeek() == localDate.getDayOfWeek()) {
+                        System.out.println(task);
+                    }
+                }
+                case EVERY_MONTH -> {
+                    if (task.getLocalDateTime().getDayOfMonth() == localDate.getDayOfMonth()) {
+                        System.out.println(task);
+                    }
+                }
+                case EVERY_YEAR -> {
+                    if (task.getLocalDateTime().getDayOfYear() == localDate.getDayOfYear()) {
+                        System.out.println(task);
+                    }
+                }
             }
+
         }
     }
 }

@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -44,18 +45,18 @@ public class Task {
     }
 
     private String getTimeNextTask() {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm");
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         switch (repetition) {
             case ONECE:
                 return " ";
             case EVERY_DAY:
-                return " Следующая дата и время: " + time.plusDays(1).format(date);
+                return ", следующая задача: " + time.plusDays(1).format(date);
             case EVERY_WEEK:
-                return " Следующая дата и время: " + time.plusWeeks(1).format(date);
+                return ", следующая задача: " + time.plusWeeks(1).format(date);
             case EVERY_MONTH:
-                return " Следующая дата и время: " + time.plusMonths(1).format(date);
+                return ", следующая задача: " + time.plusMonths(1).format(date);
             case EVERY_YEAR:
-                return " Следующая дата и время: " + time.plusYears(1).format(date);
+                return ", следующая задача: " + time.plusYears(1).format(date);
             default:
                 break;
         }
@@ -68,7 +69,7 @@ public class Task {
                 "название: " + title +
                 ", описание: " + text +
                 ", тип задачи: " + typeOfTask.getTypeOfTask() +
-                ", дата и время установки задачи: " + time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm")) +
+                ", дата и время установки задачи: " +  time.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) +
                 getTimeNextTask() +
                 ", повторяемость: " + repetition.getRepetition() +
                 '}';
